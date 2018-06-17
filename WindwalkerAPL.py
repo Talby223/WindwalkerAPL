@@ -21,6 +21,7 @@ actions.precombat+=/chi_burst
 actions.precombat+=/chi_wave
 
 # Executed every time the actor is available.
+call_action_list
 actions=auto_attack
 actions+=/spear_hand_strike,if=target.debuff.casting.react
 #Touch of Karma on cooldown, if Good Karma is enabled equal to 100% of maximum health
