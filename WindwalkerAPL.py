@@ -199,8 +199,6 @@ actions.st+=/rising_sun_kick,target_if=min:debuff.mark_of_the_crane.remains,if=(
 actions.st+=/blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=!prev_gcd.1.blackout_kick&chi.max-chi>=1
 # Cast Blackout Kick if:
 # - You have atleast 1 chi
-# -
-# -
 actions.st+=/crackling_jade_lightning,if=equipped.the_emperors_capacitor&buff.the_emperors_capacitor.stack>=19&energy.time_to_max>3
 actions.st+=/crackling_jade_lightning,if=equipped.the_emperors_capacitor&buff.the_emperors_capacitor.stack>=14&cooldown.serenity.remains<13&talent.serenity.enabled&energy.time_to_max>3
 #Legacy for the_emperors_capacitor
