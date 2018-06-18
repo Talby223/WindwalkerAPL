@@ -27,23 +27,26 @@ actions+=/spear_hand_strike,if=target.debuff.casting.react
 #Touch of Karma on cooldown, if Good Karma is enabled equal to 100% of maximum health
 actions+=/touch_of_karma,if=!talent.good_karma.enabled,interval=90,pct_health=0.5
 actions+=/touch_of_karma,if=talent.good_karma.enabled,interval=90,pct_health=1.0
-#Potion if Serenity or Storm, Earth, and Fire are up or you are running serenity and a main stat trinket procs, or you are under the effect of bloodlust, or target time to die is greater or equal to 60
+#Potion if Serenity or Storm, Earth, and Fire are up or you are running SEF and a main stat trinket procs, or you are under the effect of bloodlust, or target time to die is lower or equal to 60
 actions+=/potion,if=buff.serenity.up|buff.storm_earth_and_fire.up|(!talent.serenity.enabled&trinket.proc.agility.react)|buff.bloodlust.react|target.time_to_die<=60
 actions+=/touch_of_death,if=target.time_to_die<=9
 # Call the Serenity action list if you're using Serenity and Serenity is available (or you're currently in Serenity)
 actions+=/call_action_list,name=serenity,if=(talent.serenity.enabled&cooldown.serenity.remains<=0)|buff.serenity.up
 # Call the SEF action list if you're using SEF and are currently in SEF or have 2 SEF stacks
-actions+=/call_action_list,name=sef,if=!talent.storm_earth_and_fire.enabled&(buff.storm_earth_and_fire.up|cooldown.storm_earth_and_fire.charges=2)
-# Call the SEF action list if you're using Serenity and:
+actions+=/call_action_list,name=sef,if=!talent.serenity.enabled&(buff.storm_earth_and_fire.up|cooldown.storm_earth_and_fire.charges=2)
+
+# Call the SEF action list if you're using SEF and:
 # - FoF cd <= 12
 # - Chi >= 3
 # - RSK cd >= 1
 # OR the target will die within 25 seconds OR ToD is on the target
 actions+=/call_action_list,name=sef,if=!talent.serenity.enabled&cooldown.fists_of_fury.remains<=12&chi>=3&cooldown.rising_sun_kick.remains<=1|target.time_to_die<=25|cooldown.touch_of_death.remains>112)
+
 # Exactly the same as previous line, but with an added check whether you have 1 stack of SEF
 actions+=/call_action_list,name=sef,if=!talent.serenity.enabled&cooldown.fists_of_fury.remains<=12&chi>=3&cooldown.rising_sun_kick.remains<=1|target.time_to_die<=25|cooldown.touch_of_death.remains>112)&cooldown.storm_earth_and_fire.charges=1
-# Call the SEF action list if you're using Serenity and:
-# - Using DHC
+
+# Call the SEF action list if you're using SEF and:
+# - You're not using DHC
 # - FoF cd <= 6
 # - Chi >= 3
 # - RSK cd <= 1
@@ -62,32 +65,28 @@ actions.cd+=/berserking
 actions.cd+=/arcane_torrent,if=chi.max-chi>=1&energy.time_to_max>=0.5
 actions.cd+=/lights_judgment
 # Cast ToD cycling through 2 targets if:
-# - You have the Gale Burst trait
+# - NOTE: I suspect "if=!artifact.gale_burst.enabled" checks whether you've already cast the first ToD.
 # - You're using HMFT
 # - Your previous GCD was not ToD
 actions.cd+=/touch_of_death,cycle_targets=1,max_cycle_targets=2,if=!artifact.gale_burst.enabled&equipped.hidden_masters_forbidden_touch&!prev_gcd.1.touch_of_death
-# Cast ToD if you have Gale Burst trait (Baseline in BFA) and only if you are using the legendary gloves, hidden_masters_forbidden_touch
-actions.cd+=/touch_of_death,if=!artifact.gale_burst.enabled&!equipped.hidden_masters_forbidden_touch
-# The second cast of touch_of_death triggered by the legendary effect of hidden_masters_forbidden_touch:
-# - You have the Gale Burst trait
-# - You're using Serenity and it'll be up before the next GCD
-# - Your previous GCD was not ToD
-actions.cd+=/touch_of_death,cycle_targets=1,max_cycle_targets=2,if=artifact.gale_burst.enabled&((talent.serenity.enabled&cooldown.serenity.remains<=1)&|cooldown.fists_of_fury.remains<=4)&cooldown.rising_sun_kick.remains<7&!prev_gcd.1.touch_of_death
-# Cast Touch of Death cycling through 2 targets if:
-# - If Gale Burst is enabled
-# - If Serenity is talented and will be available before your next Global Cooldown
-# - Remaining cooldown on Fist of Fury is greater or equal to 4 seconds
-# - Remaining cooldown on Rising Sun Kick is greather than 7 seconds
-# - Previous cast was not Touch of Death
 
-actions.cd+=/touch_of_death,cycle_targets=1,max_cycle_targets=2,if=artifact.gale_burst.enabled&(talent.storm_earth_and_fire.enabled&cooldown.storm_earth_and_fire.remains<=1|chi>=2)&|cooldown.fists_of_fury.remains<=4)&cooldown.rising_sun_kick.remains<7&!prev_gcd.1.touch_of_death
-# Cast Touch of Death cycling through 2 targets if:
-# -  Gale Burst is enabled
-# -  storm_earth_and_fire is talented and will be available before your next Global Cooldown
-# -  you have 2 or more Chi
-# - Remaining cooldown on Fist of Fury is greater or equal to 4 seconds
+#Cast ToD if you're not using HMFT (and you haven't cast ToD yet, redundant)
+actions.cd+=/touch_of_death,if=!artifact.gale_burst.enabled&!equipped.hidden_masters_forbidden_touch
+
+# The second cast of touch_of_death triggered by the legendary effect of hidden_masters_forbidden_touch:
+# - You've already cast the first ToD
+# - SEF is talented and will be available before your next Global Cooldown
+# - Your previous GCD was not ToD
+# - Remaining cooldown on Fist of Fury is lower or equal to 4 seconds
+# - Remaining cooldown on Rising Sun Kick is lower than 7 seconds
+actions.cd+=/touch_of_death,cycle_targets=1,max_cycle_targets=2,if=artifact.gale_burst.enabled&((talent.serenity.enabled&cooldown.serenity.remains<=1)&|cooldown.fists_of_fury.remains<=4)&cooldown.rising_sun_kick.remains<7&!prev_gcd.1.touch_of_death
+
+# The second cast of touch_of_death triggered by the legendary effect of hidden_masters_forbidden_touch:
+# - You've already cast the first ToD
+# - Remaining cooldown on Fists of Fury is lower or equal to 4 seconds AND SEF is talented and will be available before your next Global Cooldown OR you have 2 or more Chi
+# - Your previous GCD was not ToD
 # - Remaining cooldown on Rising Sun Kick is greather than 7 seconds
-# - Previous cast was not Touch of Death
+actions.cd+=/touch_of_death,cycle_targets=1,max_cycle_targets=2,if=artifact.gale_burst.enabled&(talent.storm_earth_and_fire.enabled&cooldown.storm_earth_and_fire.remains<=1|chi>=2)&|cooldown.fists_of_fury.remains<=4)&cooldown.rising_sun_kick.remains<7&!prev_gcd.1.touch_of_death
 
 # Actions.SeF_Opener is Not Yet Implemented (NYI)
 actions.sef_opener=tiger_palm,target_if=min:debuff.mark_of_the_crane.remains,if=!prev_gcd.1.tiger_palm&!prev_gcd.1.energizing_elixir&energy=energy.max&chi<1&cooldown.fists_of_fury.remains<=0
@@ -172,48 +171,66 @@ actions.aoe+=/chi_wave
 actions.st=invoke_xuen_the_white_tiger
 actions.st+=/storm_earth_and_fire,if=!buff.storm_earth_and_fire.up
 actions.st+=/energizing_elixir,if=!prev_gcd.1.tiger_palm
-actions.st+=/blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=!prev_gcd.1.blackout_kick&chi.max-chi>=1&set_bonus.tier21_4pc&buff.bok_proc.up
+
 # T21 set bonus conditional
 # Cast Blackout Kick if:
+# - Previous GCD was not Blackout Kick
 # - Blackout Kick! is available
-# - Previous ability was not Blackout Kick
+# - You're not at max Chi
+actions.st+=/blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=!prev_gcd.1.blackout_kick&chi.max-chi>=1&set_bonus.tier21_4pc&buff.bok_proc.up
+
+# Cast Tiger Palm if:
+# - Previous GCD was not Tiger Palm
+# - Previous GCD was not EE (NOTE: redundant because of the Energy check, needs to be rewritten for BFA)
+# - You will cap Energy before next GCD
+# - You will gain 2 or more Chi
 actions.st+=/tiger_palm,target_if=min:debuff.mark_of_the_crane.remains,if=!prev_gcd.1.tiger_palm&!prev_gcd.1.energizing_elixir&energy.time_to_max<=1&chi.max-chi>=2
+# Cast FotWT if you will gain 3 or more Chi
 actions.st+=/fist_of_the_white_tiger,if=chi.max-chi>=3
 actions.st+=/whirling_dragon_punch
-actions.st+=/rising_sun_kick,target_if=min:debuff.mark_of_the_crane.remains,if=((chi>=3&energy>=40)|chi>=5)&(!talent.serenity.enabled|cooldown.serenity.remains>=6)
+
 # Cast Rising Sun Kick if:
-# - You have 3 chi or less, 40 energy or less, and 5 chi or less
-# - Serenity is not enabled
-# - Less than 6 seconds remain on Serenity Cooldown
+# - You are using SEF, and you have 3 or more Chi AND 40 or more energy OR 5 or more Chi
+# - You are using Serenity, 6 or more seconds remain on the cooldown of Serenity, and you have 3 or more Chi AND 40 or more energy OR 5 or more Chi 
+actions.st+=/rising_sun_kick,target_if=min:debuff.mark_of_the_crane.remains,if=((chi>=3&energy>=40)|chi>=5)&(!talent.serenity.enabled|cooldown.serenity.remains>=6)
+#Legacy conditional for drinking_horn_cover
 actions.st+=/fists_of_fury,if=talent.serenity.enabled&!equipped.drinking_horn_cover&cooldown.serenity.remains>=5&energy.time_to_max>2
 #Legacy conditional for drinking_horn_cover
 actions.st+=/fists_of_fury,if=talent.serenity.enabled&equipped.drinking_horn_cover&(cooldown.serenity.remains>=15|cooldown.serenity.remains<=4)&energy.time_to_max>2
-#Legacy conditional for drinking_horn_cover
+# Cast Fists of Fury if:
+# - You are using SEF
 actions.st+=/fists_of_fury,if=!talent.serenity.enabled
-# Cast Fists of Fury on cooldown if:
-# - Serenity is not talented
-actions.st+=/fists_of_fury,if=cooldown.fists_of_fury.duration<=cooldown.rising_sun_kick.remains
-# Cast Fists_of_fury on cooldown if:
+# Cast Fists of Fury if:
 # - Rising Sun Kick will not come off cooldown during the channel
+actions.st+=/fists_of_fury,if=cooldown.fists_of_fury.duration<=cooldown.rising_sun_kick.remains
+# Cast RSK if:
+# - You are using SEF OR you are using Serenity and 5 or more seconds remain on the cooldown of Serenity
 actions.st+=/rising_sun_kick,target_if=min:debuff.mark_of_the_crane.remains,if=(!talent.serenity.enabled|cooldown.serenity.remains>=5)
-actions.st+=/blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=!prev_gcd.1.blackout_kick&chi.max-chi>=1
 # Cast Blackout Kick if:
-# - You have atleast 1 chi
+# - Previous GCD was not BoK
+# - You are not at max Chi
+actions.st+=/blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=!prev_gcd.1.blackout_kick&chi.max-chi>=1
+#Legacy for the_emperors_capacitor
 actions.st+=/crackling_jade_lightning,if=equipped.the_emperors_capacitor&buff.the_emperors_capacitor.stack>=19&energy.time_to_max>3
 actions.st+=/crackling_jade_lightning,if=equipped.the_emperors_capacitor&buff.the_emperors_capacitor.stack>=14&cooldown.serenity.remains<13&talent.serenity.enabled&energy.time_to_max>3
-#Legacy for the_emperors_capacitor
-actions.st+=/spinning_crane_kick,if=active_enemies>=3&!prev_gcd.1.spinning_crane_kick
 # Cast spinning_crane_kick if:
 # - Previous cast was not spinning_crane_kick
+# - You have 3 or more active enemies (NOTE: Does not include stacks. May be redundant since actions.st should not be called given the earlier check)
+actions.st+=/spinning_crane_kick,if=active_enemies>=3&!prev_gcd.1.spinning_crane_kick
 actions.st+=/blackout_kick
-actions.st+=/chi_burst,if=chi<=3&(cooldown.rising_sun_kick.remains>=5|cooldown.whirling_dragon_punch.remains>=5)&energy.time_to_max>1
+
 # Will need to be rewritten for BFA
-actions.st+=/tiger_palm,target_if=min:debuff.mark_of_the_crane.remains,if=!prev_gcd.1.tiger_palm&!prev_gcd.1.energizing_elixir&(chi.max-chi>=2|energy.time_to_max<3)
+# Current rule: Cast Chi Burst if:
+# - You have 3 or less Chi
+# - RSK is up in 5 or more seconds OR WDP is up in 5 or more seconds
+# - You will not cap energy before the next GCD
+actions.st+=/chi_burst,if=chi<=3&(cooldown.rising_sun_kick.remains>=5|cooldown.whirling_dragon_punch.remains>=5)&energy.time_to_max>1
+
 # Cast Tiger Palm if:
-# - Previous ability was not Tiger palm or energizing_elixir
-# - You will not cap chi with less than 3 seconds until you cap energy
-# -
-# -
+# - Previous ability was not Tiger Palm or Energizing Elixir
+# - You will gain at least 2 Chi, OR you will cap energy within 3 seconds (NOTE: Could cast TP even at 5 Chi just to prevent energy capping, in theory)
+actions.st+=/tiger_palm,target_if=min:debuff.mark_of_the_crane.remains,if=!prev_gcd.1.tiger_palm&!prev_gcd.1.energizing_elixir&(chi.max-chi>=2|energy.time_to_max<3)
+
 actions.st+=/chi_wave
 actions.st+=/chi_burst
 #actions.st+=/flying_serpent_kick
