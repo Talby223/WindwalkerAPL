@@ -1,3 +1,13 @@
+// TODO:
+// Windwalker
+// - Remove old Touch of Death calls
+// - Increase the rate of resource conversion (model spending at a deficit|delays happening with FOWT)
+// - Dungeon Slice needs looking at. Probably due to the addition of raid.event conditions.
+// - Ascension needs to be looked at.
+
+// Some Changes
+// - Added raid event delay for ChiX implementation in the future and better holding prior to adds.
+
 // Windwalker Combat Action Priority List ===============================
 
 void monk_t::apl_combat_windwalker()
@@ -18,13 +28,14 @@ void monk_t::apl_combat_windwalker()
   {
     if ( true_level >= 100 )
       def->add_action(
-          "potion,if=buff.serenity.up|buff.storm_earth_and_fire.up&dot.touch_of_death.remains|target.time_to_die<=60",
-          "Use potion if Serenity is up, or both SEF and ToD are up, or the target will die within 60 seconds" );
+          "potion,if=buff.serenity.up|buff.storm_earth_and_fire.up|target.time_to_die<=60",
+          "Use potion if either Serenity or Storm, Earth, and Fire is up or the target will die within 60 seconds." );
     else
       def->add_action(
           "potion,if=buff.serenity.up|buff.storm_earth_and_fire.up|(!talent.serenity.enabled&trinket.proc.agility."
           "react)"
-          "|buff.bloodlust.react|target.time_to_die<=60" );
+          "|buff.bloodlust.react|target.time_to_die<=60"
+        "Alternate potion use: react to a main stat trinket proc if Serenity is enabled, Bloodlust, or if the target will die within 60 seconds and Serenity or Storm, Earth, and Fire are up.");
   }
 
   def->add_action(
@@ -285,7 +296,7 @@ void monk_t::apl_combat_windwalker()
   serenity->add_action( this, "Spinning Crane Kick" );
 
   // Multiple Targets
-  aoe->add_talent( this, "Whirling Dragon Punch", "", "Actions.AoE is intended for use with Hectic_Add_Cleave and currently needs to be optimized" );
+  aoe->add_talent( this, "Whirling Dragon Punch", "if=active_enemies>1&(!raid_event.adds.exists|raid_event.adds.up)," "Actions.AoE is intended for use with Hectic_Add_Cleave and currently needs to be optimized" );
   aoe->add_talent( this, "Energizing Elixir", "if=!prev_gcd.1.tiger_palm&chi<=1&energy<50" );
   aoe->add_action( this, "Fists of Fury", "if=energy.time_to_max>1" );
   aoe->add_action( this, "Rising Sun Kick",
@@ -304,15 +315,15 @@ void monk_t::apl_combat_windwalker()
                    "target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&(buff.bok_proc.up|(talent.hit_combo.enabled&prev_gcd.1.tiger_palm&chi<4))" );
 
   // Single Target
-  st->add_talent( this, "Whirling Dragon Punch", "", "Single target priority" );
-  st->add_action( this, "Fists of Fury", "if=talent.serenity.enabled|cooldown.touch_of_death.remains>6|variable.hold_tod" );
+  st->add_talent( this, "Whirling Dragon Punch","if=raid_event.adds.in>24" "", "Single target priority but holds if Adds will spawn before its off cooldown. Helps to transition into AoE.APL" );
+  st->add_action( this, "Fists of Fury", "if=talent.serenity.enabled|cooldown.touch_of_death.remains>6|variable.hold_tod|raid_event.adds.in>cooldown" ); "Again, holds if Adds will spawn before its off cooldown but slightly different to account for BoK CDR. Helps to transition into AoE.APL""
   st->add_action( this, "Rising Sun Kick", "target_if=min:debuff.mark_of_the_crane.remains,if=cooldown.touch_of_death.remains>2|variable.hold_tod", "Use RSK on targets without Mark of the Crane debuff, if possible, and if ToD is at least 2 seconds away" );
   st->add_talent( this, "Rushing Jade Wind", "if=buff.rushing_jade_wind.down&active_enemies>1" );
   st->add_action( this, spec.reverse_harm, "reverse_harm", "if=chi.max-chi>1" );
   st->add_talent( this, "Fist of the White Tiger", "target_if=min:debuff.mark_of_the_crane.remains,if=chi<3" );
   st->add_talent( this, "Energizing Elixir", "if=chi<=3&energy<50" );
   st->add_talent( this, "Chi Burst", "if=chi.max-chi>0&active_enemies=1|chi.max-chi>1", "Use CB if you are more than 0 Chi away from max and have 1 enemy, or are more than 1 Chi away from max" );
-  st->add_action( this, "Tiger Palm", "target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&chi.max-chi>3&!dot.touch_of_death.remains&buff.storm_earth_and_fire.down", "Use TP if you are 4 or more chi away from max and ToD and SEF are both not up" );
+  st->add_action( this, "Tiger Palm", "target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&chi.max-chi>3&buff.storm_earth_and_fire.down", "Use TP if you are 4 or more chi away from max and ToD and SEF are both not up" );
   st->add_talent( this, "Chi Wave" );
   st->add_action( this, "Spinning Crane Kick", "if=combo_strike&buff.dance_of_chiji.react" );
   st->add_action( this, "Blackout Kick",
@@ -324,4 +335,4 @@ void monk_t::apl_combat_windwalker()
                   "target_if=min:debuff.mark_of_the_crane.remains,if=(cooldown.fists_of_fury.remains<3&chi=2|energy.time_to_max<1)&(prev_gcd.1.tiger_palm|chi.max-chi<2)",
                   "Use BoK if FoF is close and you have 2 chi and your last global was TP, or if you are about to cap energy and either your last gcd was TP or if you are less than 2 chi away from capping" );
 
-}  // namespace
+}
