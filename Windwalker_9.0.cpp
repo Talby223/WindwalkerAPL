@@ -1,3 +1,9 @@
+// TODO:
+// Windwalker
+// - Remove old Touch of Death calls
+// - Add Covenants
+// - Add Legendaries
+
 // Windwalker Combat Action Priority List ===============================
 
 void monk_t::apl_combat_windwalker()
