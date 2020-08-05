@@ -317,7 +317,7 @@ void monk_t::apl_combat_windwalker()
   // Single Target
   st->add_talent( this, "Whirling Dragon Punch","if=raid_event.adds.in>24|buff.storm_earth_and_fire.remains<=1" "", "Single target priority but holds if Adds will spawn before its off cooldown. Helps to transition into AoE.APL" );
   st->add_talent( this, "Whirling Dragon Punch","if=raid_event.adds.in>24|cooldown.storm_earth_and_fire.recharge_time>20" "", "Single target priority but holds if Adds will spawn before its off cooldown. Helps to transition into AoE.APL" );
-  st->add_action( this, "Rising Sun Kick", "target_if=min:debuff.mark_of_the_crane.remains,if=chi>=5"
+  st->add_action( this, "Rising Sun Kick", "target_if=min:debuff.mark_of_the_crane.remains,if=chi>=5", "Should fix the RSK / FoF overlap prio"
   st->add_action( this, "Fists of Fury", "if=talent.serenity.enabled|cooldown.touch_of_death.remains>6|variable.hold_tod|raid_event.adds.in>cooldown" ); "Again, holds if Adds will spawn before its off cooldown but slightly different to account for BoK CDR. Helps to transition into AoE.APL""
   st->add_action( this, "Rising Sun Kick", "target_if=min:debuff.mark_of_the_crane.remains,if=cooldown.touch_of_death.remains>2|variable.hold_tod", "Use RSK on targets without Mark of the Crane debuff, if possible, and if ToD is at least 2 seconds away" );
   st->add_talent( this, "Rushing Jade Wind", "if=buff.rushing_jade_wind.down&active_enemies>1" );
