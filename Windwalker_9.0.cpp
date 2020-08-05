@@ -1,12 +1,11 @@
 // TODO:
 // Windwalker
 // - Remove old Touch of Death calls
-// - Increase the rate of resource conversion (model spending at a deficit|delays happening with FOWT)
-// - Dungeon Slice needs looking at. Probably due to the addition of raid.event conditions.
-// - Ascension needs to be looked at.
+// - Resource talents need to be looked at. Seem to be poorly optimized.
 
 // Some Changes
 // - Added raid event delay for ChiX implementation in the future and better holding prior to adds.
+// Storm, Earth, and Fire should be casting the correct number of abilities inside the duration window. Needs to be double checked at different haste levels.
 
 // Windwalker Combat Action Priority List ===============================
 
