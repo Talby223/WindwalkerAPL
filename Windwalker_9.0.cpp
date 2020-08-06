@@ -327,8 +327,8 @@ void monk_t::apl_combat_windwalker()
   st->add_talent( this, "Chi Burst", "if=chi.max-chi>0&active_enemies=1|chi.max-chi>1", "Use CB if you are more than 0 Chi away from max and have 1 enemy, or are more than 1 Chi away from max" );
   st->add_action( this, "Tiger Palm", "target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&chi.max-chi>3&buff.storm_earth_and_fire.down", "Use TP if you are 4 or more chi away from max and ToD and SEF are both not up" );
   st->add_talent( this, "Chi Wave" );
+  //  st->add_action( this, "Spinning Crane Kick", "if=combo_strike&(buff.dance_of_chiji.react|buff.Weapons_of_Order.up&(spinning_crane_kick.count-equipped.Calculated_Strikes>3); "Call may be mark_of_the_crane_counter. 3 stacks is placeholder. 
   st->add_action( this, "Spinning Crane Kick", "if=combo_strike&buff.dance_of_chiji.react" );
-  // st->add_action( this, "Spinning Crane Kick", "if=combo_strike|spinning_crane_kick.count>3&!equipped.Calculated_Strikes|buff.Weapons_of_Order	" ); "3 is Arbitrary. I think at 2 it deals equal damage to a BOK with the conduit. Main difference is the Chi Cost during the buff"
   st->add_action( this, "Blackout Kick",
                   "target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&((cooldown.touch_of_death.remains>2|variable.hold_tod)&(cooldown.rising_sun_kick.remains>2&cooldown.fists_of_fury.remains>2|cooldown.rising_sun_kick.remains<3&cooldown.fists_of_fury.remains>3&chi>2|cooldown.rising_sun_kick.remains>3&cooldown.fists_of_fury.remains<3&chi>4|chi>5)|buff.bok_proc.up)",
                   "Use BoK if both FoF and RSK are not close, or RSK is close and FoF is not close and you have more than 2 chi, or FoF is close RSK is not close and you have more than 3 chi, or you have more than 5 chi, or if you get a proc" );
