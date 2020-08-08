@@ -7,7 +7,6 @@ role=dps
 position=back
 professions=leatherworking=170/skinning=175
 talents=2223312
-azerite_essences=14:3/300573/5:3/300575/300576/37:3/300577/312927/35:3/312928
 
 # Default consumables
 potion=unbridled_fury
@@ -47,11 +46,11 @@ actions+=/potion,if=buff.serenity.up|dot.touch_of_death.remains|!talent.serenity
 
 # Not Sure
 actions+=/call_action_list,name=serenity,if=buff.serenity.up
+actions+=/call_action_list,name=storm_earth_and_fire,if=buff.storm_earth_and_fire.up
 actions+=/reverse_harm,if=(energy.time_to_max<1|(talent.serenity.enabled&cooldown.serenity.remains<2))&chi.max-chi>=2
 actions+=/fist_of_the_white_tiger,if=(energy.time_to_max<1|(talent.serenity.enabled&cooldown.serenity.remains<2)|(energy.time_to_max<4&cooldown.fists_of_fury.remains<1.5))&chi.max-chi>=3
 actions+=/tiger_palm,target_if=min:debuff.mark_of_the_crane.remains,if=!combo_break&(energy.time_to_max<1|(talent.serenity.enabled&cooldown.serenity.remains<2)|(energy.time_to_max<4&cooldown.fists_of_fury.remains<1.5))&chi.max-chi>=2&!dot.touch_of_death.remains
 actions+=/chi_wave,if=!talent.fist_of_the_white_tiger.enabled&time<=3
-
 actions+=/call_action_list,name=cd
 
 
@@ -78,12 +77,6 @@ actions.cd+=/use_item,name=pocketsized_computation_device,if=dot.touch_of_death.
 actions.cd+=/use_item,name=ashvanes_razor_coral,if=variable.coral_double_tod_on_use&cooldown.touch_of_death.remains>=23&(debuff.razor_coral_debuff.down|buff.storm_earth_and_fire.remains>13|target.time_to_die-cooldown.touch_of_death.remains<40&cooldown.touch_of_death.remains<23|target.time_to_die<25)
 actions.cd+=/use_item,name=ashvanes_razor_coral,if=!variable.coral_double_tod_on_use&(debuff.razor_coral_debuff.down|(!equipped.dribbling_inkpod|target.time_to_pct_30.remains<8)&(dot.touch_of_death.remains|cooldown.touch_of_death.remains+9>target.time_to_die&buff.storm_earth_and_fire.up|target.time_to_die<25))
 
-# storm_earth_and_fire
-actions.cd+=/storm_earth_and_fire,,if=cooldown.storm_earth_and_fire.charges=2|(!essence.worldvein_resonance.major|(buff.worldvein_resonance.up|cooldown.worldvein_resonance.remains>cooldown.storm_earth_and_fire.full_recharge_time))&(cooldown.touch_of_death.remains>cooldown.storm_earth_and_fire.full_recharge_time|cooldown.touch_of_death.remains>target.time_to_die)&cooldown.fists_of_fury.remains<=9&chi>=3&cooldown.whirling_dragon_punch.remains<=13|dot.touch_of_death.remains|target.time_to_die<20
-
-# serenity
-actions.cd+=/serenity,if=cooldown.rising_sun_kick.remains<=2|target.time_to_die<=12
-
 # Essences
 actions.cd+=/the_unbound_force
 actions.cd+=/purifying_blast
@@ -91,6 +84,31 @@ actions.cd+=/reaping_flames
 actions.cd+=/focused_azerite_beam
 actions.cd+=/memory_of_lucid_dreams,if=energy<40&buff.storm_earth_and_fire.up
 actions.cd+=/ripple_in_space
+
+actions+=/call_action_list,name=opener
+
+# storm_earth_and_fire
+actions.opener+=/storm_earth_and_fire,if=cooldown.storm_earth_and_fire.charges=2|(!essence.worldvein_resonance.major|(buff.worldvein_resonance.up|cooldown.worldvein_resonance.remains>cooldown.storm_earth_and_fire.full_recharge_time))&(cooldown.touch_of_death.remains>cooldown.storm_earth_and_fire.full_recharge_time|cooldown.touch_of_death.remains>target.time_to_die)&cooldown.fists_of_fury.remains<=9&chi>=3&cooldown.whirling_dragon_punch.remains<=13|dot.touch_of_death.remains|target.time_to_die<20
+
+# Storm, Earth, and Fire Window
+actions.storm_earth_and_fire=whirling_dragon_punch
+actions.storm_earth_and_fire+=/rising_sun_kick,target_if=min:debuff.mark_of_the_crane.remains,if=chi>=5
+actions.storm_earth_and_fire+=/rising_sun_kick,target_if=min:debuff.mark_of_the_crane.remains
+actions.storm_earth_and_fire+=/energizing_elixir,if=chi<=3&energy<35
+actions.storm_earth_and_fire+=/fists_of_fury,if=energy.time_to_max>3|cooldown.whirling_dragon_punch.remains<4
+actions.storm_earth_and_fire+=/rushing_jade_wind,if=buff.rushing_jade_wind.down&active_enemies>1
+actions.storm_earth_and_fire+=/reverse_harm,if=chi.max-chi>=2
+actions.storm_earth_and_fire+=/fist_of_the_white_tiger,if=chi<=2
+actions.storm_earth_and_fire+=/spinning_crane_kick,if=combo_strike&buff.dance_of_chiji.react
+actions.storm_earth_and_fire+=/blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&(cooldown.rising_sun_kick.remains>3|chi>=3)&(cooldown.fists_of_fury.remains>4|chi>=4|(chi=2&prev_gcd.1.tiger_palm))
+actions.storm_earth_and_fire+=/chi_wave
+actions.storm_earth_and_fire+=/chi_burst,if=chi.max-chi>=1&active_enemies=1|chi.max-chi>=2
+actions.storm_earth_and_fire+=/tiger_palm,target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&chi.max-chi>=2
+actions.storm_earth_and_fire+=/flying_serpent_kick,if=prev_gcd.1.blackout_kick&chi>3,interrupt=1
+
+
+# serenity
+actions.opener+=/serenity,if=cooldown.rising_sun_kick.remains<=2|target.time_to_die<=12
 
 # Serenity priority
 actions.serenity=rising_sun_kick,target_if=min:debuff.mark_of_the_crane.remains,if=active_enemies<3|prev_gcd.1.spinning_crane_kick
@@ -141,20 +159,7 @@ actions.tod=touch_of_death,if=equipped.cyclotronic_blast&target.time_to_die>9&co
 actions.tod+=/touch_of_death,if=!equipped.cyclotronic_blast&equipped.dribbling_inkpod&target.time_to_die>9&(target.time_to_pct_30.remains>=130|target.time_to_pct_30.remains<8)
 actions.tod+=/touch_of_death,if=!equipped.cyclotronic_blast&!equipped.dribbling_inkpod&target.time_to_die>9
 
-head=stygian_guise,id=174132,bonus_id=4824/1517/4786/6511/4775,azerite_powers=389/582/20/83/13
-neck=heart_of_azeroth,id=158075,bonus_id=6316/4932/4933/1648,azerite_level=89
-shoulders=pauldrons_of_the_great_convergence,id=174133,bonus_id=4823/1502/4786/6509/4775,azerite_powers=117/389/21/85/13
-back=ashjrakamas_shroud_of_resolve,id=169223,bonus_id=6598/1472
-chest=darkheart_robe,id=174131,bonus_id=4824/1517/4786/6510/4775,azerite_powers=389/388/30/15/13
-wrists=bracers_of_dark_prophecy,id=174138,bonus_id=4824/6516/6513/1517/4786
-hands=chitinspine_gloves,id=174137,bonus_id=4824/6516/6513/1517/4786
-waist=cincture_of_the_azerite_arsenal,id=159333,bonus_id=6536/6578/6579/6476/6470/6513/1647/4786
-legs=legwraps_of_the_insatiable_maw,id=173442,bonus_id=6412/6513/6578/6579/6554/1517/4786
-feet=besiegers_deckstalkers,id=159320,bonus_id=6536/6578/6579/6541/6515/1647/4786
-finger1=ichorspine_loop,id=174532,bonus_id=4824/1808/6578/6579/6482/6470/6515/1517/4786,gem_id=168642,enchant_id=6111
-finger2=ring_of_cosmic_potential,id=174533,bonus_id=4823/6516/6515/1502/4786,enchant_id=6111
-trinket1=torment_in_a_jar,id=173943,bonus_id=4824/6515/1517/4786
-trinket2=humming_black_dragonscale,id=174044,bonus_id=4824/1808/6515/1517/4786,gem_id=168642
+
 main_hand=mishun_blade_of_tyrants,id=174105,bonus_id=4824/6516/6513/1517/4786,enchant_id=5965
 off_hand=mishun_blade_of_tyrants,id=174105,bonus_id=4824/6516/6515/1517/4786,enchant_id=6148
 
