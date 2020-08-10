@@ -316,9 +316,9 @@ void monk_t::apl_combat_windwalker()
 
   // Single Target
   st->add_talent( this, "Whirling Dragon Punch","if=raid_event.adds.in>24|buff.storm_earth_and_fire.remains<=1" "", "Single target priority but holds if Adds will spawn before its off cooldown. Helps to transition into AoE.APL" );
-  st->add_talent( this, "Whirling Dragon Punch","if=raid_event.adds.in>24|cooldown.storm_earth_and_fire.recharge_time>20" "", "Single target priority but holds if Adds will spawn before its off cooldown. Helps to transition into AoE.APL" );
+  // st->add_talent( this, "Whirling Dragon Punch","if=raid_event.adds.in>24|cooldown.storm_earth_and_fire.recharge_time>20" "", "Single target priority but holds if Adds will spawn before its off cooldown. Helps to transition into AoE.APL" );
   st->add_action( this, "Rising Sun Kick", "target_if=min:debuff.mark_of_the_crane.remains,if=chi>=5", "Should fix the RSK / FoF overlap prio"
-  st->add_action( this, "Fists of Fury", "if=talent.serenity.enabled|cooldown.touch_of_death.remains>6|variable.hold_tod|raid_event.adds.in>cooldown" ); "Again, holds if Adds will spawn before its off cooldown but slightly different to account for BoK CDR. Helps to transition into AoE.APL""
+  st->add_action( this, "Fists of Fury", "if=raid_event.adds.in>cooldown&energy.time_to_max>execute_time" ); "Again, holds if Adds will spawn before its off cooldown but slightly different to account for BoK CDR. Helps to transition into AoE.APL""
   st->add_action( this, "Rising Sun Kick", "target_if=min:debuff.mark_of_the_crane.remains,if=cooldown.touch_of_death.remains>2|variable.hold_tod", "Use RSK on targets without Mark of the Crane debuff, if possible, and if ToD is at least 2 seconds away" );
   st->add_talent( this, "Rushing Jade Wind", "if=buff.rushing_jade_wind.down&active_enemies>1" );
   st->add_action( this, spec.reverse_harm, "reverse_harm", "if=chi.max-chi>1" );
@@ -327,7 +327,7 @@ void monk_t::apl_combat_windwalker()
   st->add_talent( this, "Chi Burst", "if=chi.max-chi>0&active_enemies=1|chi.max-chi>1", "Use CB if you are more than 0 Chi away from max and have 1 enemy, or are more than 1 Chi away from max" );
   st->add_action( this, "Tiger Palm", "target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&chi.max-chi>3&buff.storm_earth_and_fire.down", "Use TP if you are 4 or more chi away from max and ToD and SEF are both not up" );
   st->add_talent( this, "Chi Wave" );
-  //  st->add_action( this, "Spinning Crane Kick", "if=combo_strike&(buff.dance_of_chiji.react|buff.Weapons_of_Order.up&(spinning_crane_kick.count-equipped.Calculated_Strikes>3); "Call may be mark_of_the_crane_counter. 3 stacks is placeholder. 
+  //  st->add_action( this, "Spinning Crane Kick", "if=combo_strike&(buff.dance_of_chiji.react|buff.Weapons_of_Order.up&(spinning_crane_kick.count-equipped.Calculated_Strikes>3); "Call may be mark_of_the_crane_counter. 3 stacks is placeholder.
   st->add_action( this, "Spinning Crane Kick", "if=combo_strike&buff.dance_of_chiji.react" );
   st->add_action( this, "Blackout Kick",
                   "target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&((cooldown.touch_of_death.remains>2|variable.hold_tod)&(cooldown.rising_sun_kick.remains>2&cooldown.fists_of_fury.remains>2|cooldown.rising_sun_kick.remains<3&cooldown.fists_of_fury.remains>3&chi>2|cooldown.rising_sun_kick.remains>3&cooldown.fists_of_fury.remains<3&chi>4|chi>5)|buff.bok_proc.up)",
