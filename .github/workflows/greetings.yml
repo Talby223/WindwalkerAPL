@@ -9,7 +9,8 @@ jobs:
           issue-message: "Hello @${{ github.actor }} , thank you for submitting an issue I'll reply to it as quickly as I can!!"
           pr-message: "Hello @${{ github.actor }} , thank you submitting a pull request!"
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
+    true: pull_request
 name: Greetings
-true:
+on: 
   - pull_request
   - issues
